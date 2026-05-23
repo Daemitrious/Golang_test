@@ -1,0 +1,79 @@
+openapi: 3.0.3
+info:
+  title: Search Trends API
+  version: 1.0.0
+paths:
+  /healthz:
+    get:
+      responses:
+        '200':
+          description: Service is alive
+  /readyz:
+    get:
+      responses:
+        '200':
+          description: Service is ready
+        '503':
+          description: Service is not connected to broker
+  /top:
+    get:
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+      responses:
+        '200':
+          description: Top search queries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        query:
+                          type: string
+                        count:
+                          type: integer
+                          format: int64
+  /stopwords:
+    get:
+      responses:
+        '200':
+          description: Stopword list
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [word]
+              properties:
+                word:
+                  type: string
+      responses:
+        '201':
+          description: Stopword added
+  /stopwords/{word}:
+    delete:
+      parameters:
+        - name: word
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Stopword deleted or not found
+  /metrics:
+    get:
+      responses:
+        '200':
+          description: Prometheus metrics
